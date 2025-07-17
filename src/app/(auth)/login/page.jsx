@@ -10,10 +10,13 @@ export default function LoginPage() {
     const router = useRouter();
     const [form, setForm] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false); // 🔵 Loading state
 
     async function handleSubmit(e) {
         e.preventDefault();
         setError("");
+        setLoading(true); // 🔵 Start loading
+
         try {
             const res = await api.post("/user/login", form);
             const data = res.data;
@@ -28,6 +31,8 @@ export default function LoginPage() {
             }
         } catch (err) {
             setError(err.response?.data?.message || "Login failed.");
+        } finally {
+            setLoading(false); // 🔵 Stop loading
         }
     }
 
@@ -43,6 +48,7 @@ export default function LoginPage() {
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                     className="w-full border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500"
+                    disabled={loading}
                 />
                 <input
                     required
@@ -51,22 +57,26 @@ export default function LoginPage() {
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                     className="w-full border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500"
+                    disabled={loading}
                 />
 
-                {/* 🔴 Forgot password link */}
                 <p className="text-right text-sm">
                     <Link href="/forgot-password" className="text-blue-600 hover:underline">Forgot Password?</Link>
                 </p>
 
                 {error && <p className="text-sm text-red-600">{error}</p>}
 
-                <button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded font-medium">
-                    Login
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded font-medium disabled:opacity-60"
+                >
+                    {loading ? "Logging in..." : "Login"}
                 </button>
 
                 <p className="text-center text-sm">
                     If you don't have an account,{" "}
-                    <a href="/register" className="text-orange-600 hover:underline">Create one</a>
+                    <Link href="/register" className="text-orange-600 hover:underline">Create one</Link>
                 </p>
             </form>
         </main>
