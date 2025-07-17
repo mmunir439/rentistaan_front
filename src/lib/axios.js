@@ -1,17 +1,24 @@
 // src/lib/axios.js
 import axios from "axios";
+import { getToken } from "@/utils/token"; // <-- import the token getter
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API, // http://localhost:5000
-  headers: { "Content-Type": "application/json" },
+  baseURL: "http://10.140.2.124:5000",
+  withCredentials: false, // only use true if you're using cookies
 });
 
-api.interceptors.request.use((config) => {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("token");
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+// Add Authorization header to every request
+api.interceptors.request.use(
+  (config) => {
+    const token = getToken(); // get the stored token
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
 export default api;
