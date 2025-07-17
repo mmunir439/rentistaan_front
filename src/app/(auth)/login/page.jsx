@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import api from "@/lib/axios";
 import { setToken, getToken, clearToken } from "@/utils/token";
 export default function LoginPage() {
     const router = useRouter();
@@ -13,7 +13,7 @@ export default function LoginPage() {
         e.preventDefault();
         setError("");
         try {
-            const res = await axios.post("/user/login", form);
+            const res = await api.post("/user/login", form);
             const data = res.data;
 
             setToken(data.token);
