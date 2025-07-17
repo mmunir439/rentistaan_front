@@ -18,20 +18,9 @@ export default function UserDashboard() {
                 Welcome, {user.name}!
             </h1>
 
-            <div className="bg-white shadow-xl rounded-xl p-6 flex flex-col sm:flex-row items-center sm:items-start sm:space-x-8 space-y-6 sm:space-y-0">
-                {/* Profile Image */}
-                <img
-                    src={
-                        user.photo
-                            ? `http://localhost:5000/uploads/${user.photo}`
-                            : "/default-user.jpg"
-                    }
-                    alt="Profile"
-                    className="w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 border-[#f85606] object-cover shadow-md"
-                />
-
+            <div className="bg-white shadow-xl rounded-xl p-6 flex flex-col items-center sm:items-start">
                 {/* User Info */}
-                <div className="text-center sm:text-left flex-1">
+                <div className="text-center sm:text-left w-full">
                     <p className="text-2xl sm:text-3xl font-semibold text-gray-800">
                         {user.name}
                     </p>

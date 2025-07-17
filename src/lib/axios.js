@@ -3,8 +3,8 @@ import axios from "axios";
 import { getToken } from "@/utils/token"; // <-- import the token getter
 
 const api = axios.create({
-  baseURL: "http://10.140.2.124:5000",
-  withCredentials: false, // only use true if you're using cookies
+  baseURL: "http://localhost:5000/", // Your backend base
+  withCredentials: true, // optional, only if you use cookies
 });
 
 // Add Authorization header to every request

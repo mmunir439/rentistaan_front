@@ -1,14 +1,14 @@
 "use client";
-const { token } = useParams();
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import api from "@/lib/axios";
 
 export default function ResetPasswordPage() {
     const router = useRouter();
-    const { token } = useParams();
+    const params = useParams();
+    const token = params.token;
+
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
 
@@ -16,10 +16,8 @@ export default function ResetPasswordPage() {
         e.preventDefault();
         try {
             const res = await api.post(`/user/resetPassword/${token}`, { password });
-            setMessage("Password reset successfully. Please login.");
-            setTimeout(() => {
-                router.push("/login");
-            }, 2000);
+            setMessage("Password reset successfully. Redirecting to login...");
+            setTimeout(() => router.push("/login"), 2000);
         } catch (err) {
             setMessage(err.response?.data?.message || "Reset failed.");
         }

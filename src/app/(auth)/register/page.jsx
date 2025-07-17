@@ -2,143 +2,116 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import api from "@/lib/axios";
-import Link from "next/link";
+import api from "@/lib/axios"; // Axios instance with baseURL
 
 export default function RegisterPage() {
     const router = useRouter();
 
-    const [form, setForm] = useState({ name: "", email: "", password: "", photo: null });
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false); // ✅ Loading state
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        password: "",
+    });
 
-    async function handleSubmit(e) {
-        e.preventDefault(); // ❌ Prevents the page from reloading on form submit
-        setError("");       // 🔁 Clear any old error messages
-        setLoading(true);   // ✅ Start loading
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    // Handle input change
+    const handleChange = (e) => {
+        setForm({
+            ...form,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    // Submit form
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
+        setLoading(true);
 
         try {
-            // ✅ Log the form data for debugging
-            console.log("Submitting form:", form);
-
-            // ✅ Send POST request to backend /user/register with the form data
-            const formData = new FormData();
-            formData.append("name", form.name);
-            formData.append("email", form.email);
-            formData.append("password", form.password);
-            if (form.photo) {
-                formData.append("photo", form.photo);
-            }
-
-            await api.post("/user/register", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-
-            // ✅ If successful, show success alert and redirect to login page
-            alert("Registration successful!");
+            // Send JSON directly — no FormData needed
+            await api.post("/user/register", form);
             router.push("/login");
-
         } catch (err) {
-            // ❌ If there's an error (like email already used), show it
-            console.error("Registration Error:", err);
-            setError(err.response?.data?.message || "Registration failed.");
+            console.error(err);
+            setError(err.response?.data?.message || "Registration failed. Try again.");
         } finally {
-            setLoading(false); // ✅ Stop loading
+            setLoading(false);
         }
-    }
+    };
+
     return (
-        <main className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-            {/* ✅ Registration Form */}
-            <form
-                onSubmit={handleSubmit}
-                className="w-full max-w-sm space-y-4 rounded-lg border bg-white p-6 shadow"
-            >
-                {/* 🔤 Title of the form */}
-                <h1 className="text-2xl font-bold text-center">Register</h1>
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="bg-white rounded-lg shadow-md w-full max-w-md px-8 py-10">
+                <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+                    Create Your Account
+                </h2>
 
-                {/* 🧑 Input for Name */}
-                <input
-                    required
-                    placeholder="Name"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500"
-                    disabled={loading}
-                />
+                {error && (
+                    <p className="mb-4 text-red-600 font-medium text-center">{error}</p>
+                )}
 
-                {/* 📧 Input for Email */}
-                <input
-                    required
-                    type="email"
-                    placeholder="Email"
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500"
-                    disabled={loading}
-                />
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    {/* Name */}
+                    <div>
+                        <label className="block mb-1 text-sm font-semibold text-gray-700">
+                            Full Name
+                        </label>
+                        <input
+                            type="text"
+                            name="name"
+                            value={form.name}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter your full name"
+                        />
+                    </div>
 
-                {/* 🔒 Input for Password */}
-                <input
-                    required
-                    type="password"
-                    placeholder="Password"
-                    value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    className="w-full border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500"
-                    disabled={loading}
-                />
+                    {/* Email */}
+                    <div>
+                        <label className="block mb-1 text-sm font-semibold text-gray-700">
+                            Email Address
+                        </label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={form.email}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter your email"
+                        />
+                    </div>
 
-                {/* 📷 Input for Photo */}
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setForm({ ...form, photo: e.target.files[0] })}
-                    className="w-full border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500"
-                    disabled={loading}
-                />
+                    {/* Password */}
+                    <div>
+                        <label className="block mb-1 text-sm font-semibold text-gray-700">
+                            Password
+                        </label>
+                        <input
+                            type="password"
+                            name="password"
+                            value={form.password}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter your password"
+                        />
+                    </div>
 
-                {/* ❌ Display error if exists */}
-                {error && <p className="text-sm text-red-600">{error}</p>}
-
-                {/* ✅ Submit Button */}
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded font-medium disabled:opacity-60"
-                >
-                    {loading ? (
-                        <span className="flex items-center justify-center">
-                            <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
-                                <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                    fill="none"
-                                />
-                                <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
-                                />
-                            </svg>
-                            Registering...
-                        </span>
-                    ) : (
-                        "Register"
-                    )}
-                </button>
-
-                {/* 🔁 Link to Login Page */}
-                <p className="text-center text-sm">
-                    Already have an account?{" "}
-                    <Link href="/login" className="text-orange-600 hover:underline">
-                        Login
-                    </Link>
-                </p>
-            </form>
-        </main>
+                    {/* Submit Button */}
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded transition duration-200"
+                    >
+                        {loading ? "Registering..." : "Register"}
+                    </button>
+                </form>
+            </div>
+        </div>
     );
 }
