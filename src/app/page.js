@@ -26,8 +26,8 @@ export default function NavBar() {
   }, [pathname]);
 
   const navigationLinks = [
-    { href: "/postItem", label: "Post Item", Icon: IoIosAddCircle },
-    { href: "/rentItem", label: "Rent Item", Icon: FaShoppingBag },
+    { href: "/rentitems/postItem", label: "Post Item", Icon: IoIosAddCircle },
+    { href: "/rentitems", label: "Rent Item", Icon: FaShoppingBag },
   ];
 
   // Handles navigation and triggers loading spinner

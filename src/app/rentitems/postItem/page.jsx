@@ -1,129 +1,154 @@
 "use client";
-// Ensures this component runs on the client side in Next.js (needed for state, localStorage, etc.)
 
 import { useState } from "react";
-// Import useState to manage form, image, and error states.
-
 import { useRouter } from "next/navigation";
-// Import useRouter to programmatically navigate after successful post.
-
 import api from "@/lib/axios";
-// Import pre-configured Axios instance for making API requests.
 
 export default function PostItemPage() {
-    // Functional component for the Post Item page.
-
     const router = useRouter();
-    // Initialize router for redirecting.
 
     const [form, setForm] = useState({
-        // Form state to hold input values.
         title: "",
         description: "",
         category: "",
         pricePerHour: "",
         location: "",
-        features: "", // Will be sent as JSON string
+        features: "",
     });
 
     const [image, setImage] = useState(null);
-    // Store the uploaded image file.
-
     const [error, setError] = useState("");
-    // Store and display error messages.
 
-    function handleChange(e) {
-        // Handle change for text inputs.
+    const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
-    }
+    };
 
-    function handleImageChange(e) {
-        // Handle file input change (image).
+    const handleImageChange = (e) => {
         setImage(e.target.files[0]);
-    }
+    };
 
-    async function handleSubmit(e) {
-        // Form submission handler.
-        e.preventDefault(); // Prevent default page reload.
-        setError(""); // Clear previous errors.
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
 
         const token = localStorage.getItem("token");
-        // Get JWT token from local storage.
-
         if (!token) {
-            // If no token, user is not logged in.
             setError("Please log in first.");
             return;
         }
 
         const formData = new FormData();
-        // Create form data object to send multipart/form-data.
-
         Object.entries(form).forEach(([key, value]) => {
-            // Append each form field to formData.
             formData.append(key, value);
         });
 
-        if (image) formData.append("image", image);
-        // If image is selected, append it to formData.
+        if (image) {
+            formData.append("image", image);
+        }
 
         try {
-            const res = await api.post("/postItem", formData, {
-                // Send POST request to backend.
+            const res = await api.post("/rentitem/additem", formData, {
                 headers: {
-                    "Authorization": `Bearer ${token}`, // Send token in header
-                    "Content-Type": "multipart/form-data", // Tell backend it's multipart
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
                 },
             });
 
             if (res.data.success) {
-                // If backend returns success
                 router.push("/rentitems");
-                // Redirect to rent items listing page.
             } else {
                 setError(res.data.message || "Something went wrong");
-                // Show error if not successful.
             }
         } catch (err) {
             console.error(err);
-            setError(err.response?.data?.message || "Error uploading item");
-            // Show server-side error if present.
+            setError(err.response?.data?.message || "Upload failed");
         }
-    }
+    };
 
     return (
-        <main className="p-6 max-w-xl mx-auto">
-            {/* Page container with padding and centered max width */}
-            <h1 className="text-2xl font-bold mb-4">Post New Rent Item</h1>
+        <main className="p-6 max-w-xl mx-auto bg-white shadow-lg rounded-md">
+            <h1 className="text-2xl font-bold mb-6 text-gray-800">Post New Rent Item</h1>
 
-            {error && <p className="text-red-500 mb-2">{error}</p>}
-            {/* Display error message if any */}
+            {error && <p className="text-red-500 mb-4">{error}</p>}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Form with vertical spacing */}
-                <input name="title" placeholder="Title" onChange={handleChange} required className="w-full p-2 border" />
-                {/* Title input */}
+                <input
+                    name="title"
+                    placeholder="Title"
+                    onChange={handleChange}
+                    required
+                    className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
 
-                <textarea name="description" placeholder="Description" onChange={handleChange} required className="w-full p-2 border" />
-                {/* Description textarea */}
+                <textarea
+                    name="description"
+                    placeholder="Description"
+                    onChange={handleChange}
+                    required
+                    className="w-full p-3 border rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows={3}
+                />
 
-                <input name="category" placeholder="Category" onChange={handleChange} required className="w-full p-2 border" />
-                {/* Category input */}
+                {/* ✅ Category using datalist */}
+                <div>
+                    <input
+                        name="category"
+                        list="categories"
+                        placeholder="Select a category"
+                        onChange={handleChange}
+                        required
+                        className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <datalist id="categories">
+                        <option value="Vehicles" />
+                        <option value="House" />
+                        <option value="Electronics" />
+                        <option value="Tools" />
+                        <option value="Furniture" />
+                        <option value="Clothing" />
+                        <option value="Sports" />
+                        <option value="Other" />
+                    </datalist>
+                </div>
 
-                <input name="pricePerHour" placeholder="Price Per Hour" type="number" onChange={handleChange} required className="w-full p-2 border" />
-                {/* Price per hour input */}
+                <input
+                    name="pricePerHour"
+                    placeholder="Price Per Hour"
+                    type="number"
+                    onChange={handleChange}
+                    required
+                    className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
 
-                <input name="location" placeholder="Location" onChange={handleChange} required className="w-full p-2 border" />
-                {/* Location input */}
+                <input
+                    name="location"
+                    placeholder="Location"
+                    onChange={handleChange}
+                    required
+                    className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
 
-                <input name="features" placeholder='Features (e.g. {"color":"Red"})' onChange={handleChange} className="w-full p-2 border" />
-                {/* Features input as JSON string */}
+                <input
+                    name="features"
+                    placeholder='Features (e.g. {"battery":"Extra Battery"})'
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
 
-                <input type="file" accept="image/*" onChange={handleImageChange} className="w-full p-2 border" />
-                {/* Image upload input */}
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    required
+                    className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
 
-                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Submit</button>
-                {/* Submit button */}
+                <button
+                    type="submit"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded transition duration-200"
+                >
+                    Submit
+                </button>
             </form>
         </main>
     );

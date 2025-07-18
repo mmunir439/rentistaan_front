@@ -1,67 +1,104 @@
 "use client";
-// ✅ Required for using hooks like useState, useEffect, useParams in Next.js App Router.
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-// ✅ `useParams` gets the dynamic route parameter (like [id]) from the URL.
-
+import Link from "next/link";
 import api from "@/lib/axios";
-// ✅ Pre-configured Axios instance (with baseURL set) for making HTTP requests to your backend.
 
-// 📦 This component fetches and displays details of a single rent item
 export default function RentItemDetails() {
     const { id } = useParams();
-    // ✅ Extracts the `id` from the URL (e.g. /rent-items/123 → id = 123)
-
     const [item, setItem] = useState(null);
-    // ✅ Local state to store the rent item fetched from the server
+    const [error, setError] = useState(null);
 
-    // 📡 Fetch the item details when the component loads or when `id` changes
     useEffect(() => {
         async function fetchItem() {
             try {
-                const res = await api.get(`/${id}`);
-                // ✅ Makes a GET request to `/your-api-url/:id`
-                // Make sure this route exists on your backend.
+                const res = await api.get(`/rentitem/${id}`);
+                const data = res.data.data;
 
-                setItem(res.data.data);
-                // ✅ Sets the response data to `item` state
+                if (Array.isArray(data) && data.length > 0) {
+                    setItem(data[0]);
+                } else {
+                    setError("Item not found.");
+                }
             } catch (err) {
                 console.error("Error fetching item:", err);
-                // 🛑 If any error occurs (e.g., network, 404), it logs it
+                setError("Failed to load item details.");
             }
         }
 
         fetchItem();
-        // 🔁 Immediately call the function on mount
     }, [id]);
-    // ✅ Re-run if the ID changes (e.g., user navigates to a different item)
 
-    // ⏳ Show loading text until the item data is available
-    if (!item) return <p>Loading...</p>;
+    if (error) return <p className="text-red-600 p-6">{error}</p>;
+    if (!item) return <p className="p-6">Loading...</p>;
 
-    // ✅ Once item is loaded, render the details
     return (
-        <main className="p-6">
-            {/* 📛 Title of the item */}
-            <h1 className="text-2xl font-bold">{item.title}</h1>
+        <div className="min-h-screen bg-orange-50 text-gray-800">
+            {/* 🚀 Navbar */}
+            <nav className="bg-orange-500 text-white p-4 shadow-md">
+                <div className="container mx-auto flex justify-between items-center">
+                    <h1 className="text-2xl font-bold">Rentistaaaan</h1>
+                    <div className="flex space-x-6">
+                        <Link href="/" className="hover:underline">Home</Link>
+                        <Link href="#" className="hover:underline">Explore</Link>
+                        <Link href="#" className="hover:underline">About</Link>
+                    </div>
+                </div>
+            </nav>
 
-            {/* 📝 Description */}
-            <p>{item.description}</p>
+            {/* 🎯 Main Content */}
+            <main className="p-4 md:p-6 max-w-3xl mx-auto bg-white shadow rounded-lg mt-6">
+                {/* 🖼️ Image */}
+                {item.image?.length > 0 && (
+                    <div className="flex justify-center mb-4">
+                        <img
+                            src={
+                                item.image[0].url.startsWith("http")
+                                    ? item.image[0].url
+                                    : `/uploads/${item.image[0].url}`
+                            }
+                            alt={item.title}
+                            className="w-full max-w-[500px] h-[250px] object-cover rounded-lg shadow-md"
+                        />
+                    </div>
+                )}
 
-            {/* 📂 Category */}
-            <p>Category: {item.category}</p>
+                {/* 📛 Title */}
+                <h1 className="text-2xl md:text-3xl font-bold text-orange-600 mb-2">{item.title}</h1>
 
-            {/* 📍 Location of item */}
-            <p>Location: {item.location}</p>
+                {/* 📝 Description */}
+                <p className="text-gray-700 mb-4">{item.description}</p>
 
-            {/* 💰 Price per hour */}
-            <p>Rs {item.pricePerHour}/hr</p>
+                {/* 📂 Category */}
+                <p className="mb-2 text-sm text-gray-800">
+                    <strong className="text-orange-600">Category:</strong> {item.category}
+                </p>
 
-            {/* 🖼️ Show first image if available */}
-            {item.images?.[0]?.url && (
-                <img src={item.images[0].url} alt="item" width={200} />
-            )}
-        </main>
+                {/* 📍 Location */}
+                <p className="mb-2 text-sm text-gray-800">
+                    <strong className="text-orange-600">Location:</strong> {item.location}
+                </p>
+
+                {/* 💰 Price */}
+                <p className="mb-2 text-sm text-gray-800">
+                    <strong className="text-orange-600">Price Per Hour:</strong> Rs {item.pricePerHour}
+                </p>
+
+                {/* ⚙️ Features */}
+                {item.features && typeof item.features === "object" && (
+                    <div className="mt-4">
+                        <h2 className="font-semibold text-orange-600 mb-1">Features:</h2>
+                        <ul className="list-disc pl-5 text-gray-700 text-sm">
+                            {Object.entries(item.features).map(([key, value]) => (
+                                <li key={key}>
+                                    <strong>{key}:</strong> {value}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+            </main>
+        </div>
     );
 }

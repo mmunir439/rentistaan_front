@@ -68,52 +68,52 @@ export default function LoginPage() {
                 {/* Password Input */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input
-                    required
-                    type="password"
-                    placeholder="Enter your password"
-                    value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    <input
+                        required
+                        type="password"
+                        placeholder="Enter your password"
+                        value={form.password}
+                        onChange={(e) => setForm({ ...form, password: e.target.value })}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        disabled={loading || navLoading}
+                    />
+                    <div className="text-right mt-1 text-sm">
+                        <button
+                            type="button"
+                            className="text-orange-600 hover:underline"
+                            onClick={() => handleNav("/forgot-password")}
+                            disabled={loading || navLoading}
+                        >
+                            {navLoading ? "Loading..." : "Forgot Password?"}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Error Message */}
+                {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+
+                {/* Submit Button */}
+                <button
+                    type="submit"
                     disabled={loading || navLoading}
-                />
-                <div className="text-right mt-1 text-sm">
+                    className="w-full bg-orange-500 hover:bg-orange-600 transition duration-200 text-white font-semibold py-3 rounded-md disabled:opacity-60"
+                >
+                    {loading ? "Logging in..." : "Login"}
+                </button>
+
+                {/* Register Link */}
+                <p className="text-center text-sm text-gray-600">
+                    Don’t have an account?{" "}
                     <button
                         type="button"
-                        className="text-orange-600 hover:underline"
-                        onClick={() => handleNav("/forgot-password")}
+                        onClick={() => handleNav("/register")}
                         disabled={loading || navLoading}
+                        className="text-orange-600 hover:underline font-medium"
                     >
-                        {navLoading ? "Loading..." : "Forgot Password?"}
+                        {navLoading ? "Loading..." : "Register now"}
                     </button>
-                </div>
-            </div>
-
-            {/* Error Message */}
-            {error && <p className="text-red-600 text-sm text-center">{error}</p>}
-
-            {/* Submit Button */}
-            <button
-                type="submit"
-                disabled={loading || navLoading}
-                className="w-full bg-orange-500 hover:bg-orange-600 transition duration-200 text-white font-semibold py-3 rounded-md disabled:opacity-60"
-            >
-                {loading ? "Logging in..." : "Login"}
-            </button>
-
-            {/* Register Link */}
-            <p className="text-center text-sm text-gray-600">
-                Don’t have an account?{" "}
-                <button
-                    type="button"
-                    onClick={() => handleNav("/register")}
-                    disabled={loading || navLoading}
-                    className="text-orange-600 hover:underline font-medium"
-                >
-                    {navLoading ? "Loading..." : "Register now"}
-                </button>
-            </p>
-        </form >
+                </p>
+            </form >
         </main >
     );
 }
