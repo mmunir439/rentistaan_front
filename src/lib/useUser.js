@@ -1,3 +1,4 @@
+// src/lib/useUser.js
 import { useState, useEffect } from "react";
 import api from "@/lib/axios";
 
@@ -8,15 +9,11 @@ export default function useUser() {
     async function fetchUser() {
       try {
         const res = await api.get("/user/me");
-        setUser(res.data.user); // make sure it's .user (based on your Postman response)
+        setUser(res.data.user);
       } catch (err) {
-        console.error(
-          "Failed to load user info:",
-          err.response?.data || err.message
-        );
+        console.error("Failed to load user info:", err);
       }
     }
-
     fetchUser();
   }, []);
 

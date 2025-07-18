@@ -3,20 +3,28 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
-import { setToken, getToken, clearToken } from "@/utils/token";
+import { setToken } from "@/utils/token";
 import Link from "next/link";
 
 export default function LoginPage() {
     const router = useRouter();
     const [form, setForm] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false); // 🔵 Loading state
+    const [loading, setLoading] = useState(false);
+    const [navLoading, setNavLoading] = useState(false); // 🔵 Navigation loading
+
+    // 🔁 Navigation with loading (used for register/forgot)
+    const handleNav = (url) => {
+        setNavLoading(true);
+        setTimeout(() => {
+            router.push(url);
+        }, 500); // small delay to show spinner
+    };
 
     async function handleSubmit(e) {
         e.preventDefault();
         setError("");
-        setLoading(true); // 🔵 Start loading
-
+        setLoading(true);
         try {
             const res = await api.post("/user/login", form);
             const data = res.data;
@@ -24,61 +32,88 @@ export default function LoginPage() {
             setToken(data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
 
-            if (data.user.role === "admin") {
-                router.push("/admin");
-            } else {
-                router.push("/dashboard");
-            }
+            router.push(data.user.role === "admin" ? "/admin" : "/dashboard");
         } catch (err) {
             setError(err.response?.data?.message || "Login failed.");
         } finally {
-            setLoading(false); // 🔵 Stop loading
+            setLoading(false);
         }
     }
 
     return (
-        <main className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-            <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4 rounded-lg border bg-white p-6 shadow">
-                <h1 className="text-2xl font-bold text-center">Login</h1>
+        <main className="min-h-screen bg-gradient-to-br from-orange-100 via-white to-orange-50 flex items-center justify-center px-4">
+            <form
+                onSubmit={handleSubmit}
+                className="w-full max-w-md rounded-2xl bg-white shadow-lg p-8 space-y-6 border border-orange-200"
+            >
+                <h1 className="text-3xl font-bold text-center text-orange-600">Welcome Back</h1>
+                <p className="text-center text-gray-600 text-sm">
+                    Log in to continue to <span className="font-medium text-orange-500">Rentistaan</span>
+                </p>
 
-                <input
-                    required
-                    type="email"
-                    placeholder="Email"
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500"
-                    disabled={loading}
-                />
+                {/* Email Input */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input
+                        required
+                        type="email"
+                        placeholder="Enter your email"
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        disabled={loading || navLoading}
+                    />
+                </div>
+
+                {/* Password Input */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
                 <input
                     required
                     type="password"
-                    placeholder="Password"
+                    placeholder="Enter your password"
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    className="w-full border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500"
-                    disabled={loading}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    disabled={loading || navLoading}
                 />
+                <div className="text-right mt-1 text-sm">
+                    <button
+                        type="button"
+                        className="text-orange-600 hover:underline"
+                        onClick={() => handleNav("/forgot-password")}
+                        disabled={loading || navLoading}
+                    >
+                        {navLoading ? "Loading..." : "Forgot Password?"}
+                    </button>
+                </div>
+            </div>
 
-                <p className="text-right text-sm">
-                    <Link href="/forgot-password" className="text-blue-600 hover:underline">Forgot Password?</Link>
-                </p>
+            {/* Error Message */}
+            {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
-                {error && <p className="text-sm text-red-600">{error}</p>}
+            {/* Submit Button */}
+            <button
+                type="submit"
+                disabled={loading || navLoading}
+                className="w-full bg-orange-500 hover:bg-orange-600 transition duration-200 text-white font-semibold py-3 rounded-md disabled:opacity-60"
+            >
+                {loading ? "Logging in..." : "Login"}
+            </button>
 
+            {/* Register Link */}
+            <p className="text-center text-sm text-gray-600">
+                Don’t have an account?{" "}
                 <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded font-medium disabled:opacity-60"
+                    type="button"
+                    onClick={() => handleNav("/register")}
+                    disabled={loading || navLoading}
+                    className="text-orange-600 hover:underline font-medium"
                 >
-                    {loading ? "Logging in..." : "Login"}
+                    {navLoading ? "Loading..." : "Register now"}
                 </button>
-
-                <p className="text-center text-sm">
-                    If you don't have an account,{" "}
-                    <Link href="/register" className="text-orange-600 hover:underline">Create one</Link>
-                </p>
-            </form>
-        </main>
+            </p>
+        </form >
+        </main >
     );
 }

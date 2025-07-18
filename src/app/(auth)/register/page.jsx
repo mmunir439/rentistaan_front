@@ -1,8 +1,8 @@
-"use client";
+"use client"; // ✅ This tells Next.js that this component runs on the client side
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import api from "@/lib/axios"; // Axios instance with baseURL
+import api from "@/lib/axios"; // ✅ Axios instance with baseURL setup
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -16,7 +16,6 @@ export default function RegisterPage() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // Handle input change
     const handleChange = (e) => {
         setForm({
             ...form,
@@ -24,14 +23,12 @@ export default function RegisterPage() {
         });
     };
 
-    // Submit form
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
         setLoading(true);
 
         try {
-            // Send JSON directly — no FormData needed
             await api.post("/user/register", form);
             router.push("/login");
         } catch (err) {
@@ -43,20 +40,22 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="bg-white rounded-lg shadow-md w-full max-w-md px-8 py-10">
-                <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-100 via-white to-pink-100 px-4">
+            <div className="w-full max-w-lg bg-white shadow-2xl rounded-xl p-8 sm:p-10 border border-orange-200">
+                <h2 className="text-3xl font-extrabold text-center text-orange-600 mb-6 tracking-tight">
                     Create Your Account
                 </h2>
 
                 {error && (
-                    <p className="mb-4 text-red-600 font-medium text-center">{error}</p>
+                    <p className="text-red-600 bg-red-100 border border-red-200 rounded p-3 mb-4 text-sm text-center">
+                        {error}
+                    </p>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Name */}
+                    {/* Full Name */}
                     <div>
-                        <label className="block mb-1 text-sm font-semibold text-gray-700">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
                             Full Name
                         </label>
                         <input
@@ -65,14 +64,14 @@ export default function RegisterPage() {
                             value={form.name}
                             onChange={handleChange}
                             required
-                            className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter your full name"
+                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-400 focus:outline-none transition"
+                            placeholder="e.g. Muhammad Ali"
                         />
                     </div>
 
                     {/* Email */}
                     <div>
-                        <label className="block mb-1 text-sm font-semibold text-gray-700">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
                             Email Address
                         </label>
                         <input
@@ -81,14 +80,14 @@ export default function RegisterPage() {
                             value={form.email}
                             onChange={handleChange}
                             required
-                            className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter your email"
+                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-400 focus:outline-none transition"
+                            placeholder="you@example.com"
                         />
                     </div>
 
                     {/* Password */}
                     <div>
-                        <label className="block mb-1 text-sm font-semibold text-gray-700">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
                             Password
                         </label>
                         <input
@@ -97,8 +96,8 @@ export default function RegisterPage() {
                             value={form.password}
                             onChange={handleChange}
                             required
-                            className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter your password"
+                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-400 focus:outline-none transition"
+                            placeholder="••••••••"
                         />
                     </div>
 
@@ -106,11 +105,19 @@ export default function RegisterPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded transition duration-200"
+                        className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg shadow-sm transition duration-200"
                     >
-                        {loading ? "Registering..." : "Register"}
+                        {loading ? "Registering..." : "Create Account"}
                     </button>
                 </form>
+
+                {/* Optional: already have account link */}
+                <p className="text-sm text-center text-gray-600 mt-6">
+                    Already have an account?{" "}
+                    <a href="/login" className="text-orange-500 font-semibold hover:underline">
+                        Log in
+                    </a>
+                </p>
             </div>
         </div>
     );
