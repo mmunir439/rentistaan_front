@@ -2,7 +2,6 @@
 import React from "react";
 import { Facebook, Twitter, Linkedin, Youtube, Mail, MapPin } from "lucide-react";
 import Link from "next/link";
-
 export default function Footer() {
     return (
         <footer className="bg-gray-900 text-white py-10 px-4 sm:px-8 md:px-16">
@@ -22,7 +21,8 @@ export default function Footer() {
                         <li><Link href="/rentitems" className="hover:text-teal-400">Browse Items</Link></li>
                         <li><Link href="/rentitems/postItem" className="hover:text-teal-400">Post Your Item</Link></li>
                         <li><Link href="/about" className="hover:text-teal-400">About Us</Link></li>
-                        <li><Link href="/faq" className="hover:text-teal-400">FAQs</Link></li>
+                        <li><Link href="/faqs" className="hover:text-orange-600">FAQs</Link>
+                        </li>
                     </ul>
                 </div>
 
