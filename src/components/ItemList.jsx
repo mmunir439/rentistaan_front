@@ -1,8 +1,8 @@
 "use client";
 import api from "@/lib/axios";
 import React, { useState, useEffect } from "react";
-
-export default function Herosection() {
+import Link from "next/link";
+export default function ItemList() {
     const [items, setItems] = useState([]);
     const [visibleCount, setVisibleCount] = useState(8); // Always show 8 initially
 
@@ -44,14 +44,14 @@ export default function Herosection() {
                                 className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
                             />
                         </div>
-
                         <div className="p-4 bg-white rounded-b-2xl space-y-2">
                             <h2 className="text-lg font-semibold text-gray-900">{item.title}</h2>
                             <p className="text-sm text-gray-600">{item.location}</p>
                             <p className="text-md text-red-500 font-bold">Rs {item.pricePerHour} / hour</p>
-                            <button className="mt-2 px-4 py-1 bg-gradient-to-r from-orange-400 to-red-400 text-white text-sm rounded-full hover:scale-105 transition">
-                                Rent Now
-                            </button>
+
+                            <Link href={`/rent/${item._id}`} className="mt-2 px-4 py-1 bg-gradient-to-r from-orange-400 to-red-400 text-white text-sm rounded-full hover:scale-105 transition">
+                                <button>Rent Now</button>
+                            </Link>
                         </div>
                     </div>
                 ))}

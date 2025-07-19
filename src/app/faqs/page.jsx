@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import Faqnavbar from "@/components/Faqnavbaar";
 import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar_2";
 const faqs = [
     {
         question: "How can I rent an item on Rentistaan?",
@@ -54,7 +54,8 @@ export default function FAQPage() {
 
     return (
         <div>
-            <Faqnavbar />
+         <Navbar/>
+            {/* <Faqnavbar /> */}
             <section className="min-h-screen bg-gradient-to-b from-white to-gray-50 py-16 px-4 sm:px-6 lg:px-20">
                 <h1 className="text-4xl font-bold text-center mb-10 text-gray-800">Frequently Asked Questions</h1>
                 <div className="max-w-4xl mx-auto space-y-4">

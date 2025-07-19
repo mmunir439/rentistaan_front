@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import { setToken } from "@/utils/token";
 import Link from "next/link";
-
 export default function LoginPage() {
     const router = useRouter();
     const [form, setForm] = useState({ email: "", password: "" });

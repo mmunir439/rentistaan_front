@@ -1,10 +1,11 @@
 "use client";
 import React from "react";
-import Aboutnavbar from "@/components/Aboutnavbar";
+import Navbar from "@/components/Navbar_2";
+import Footer from "@/components/Footer";
 export default function AboutUs() {
     return (
         <div>
-            <Aboutnavbar />
+            <Navbar />
             <section className="bg-[#F5F5F5] min-h-screen px-4 sm:px-6 lg:px-8 py-12">
                 <div className="text-center mb-12">
                     <h1 className="text-4xl sm:text-5xl font-extrabold text-[#212121] mb-4">
@@ -65,7 +66,7 @@ export default function AboutUs() {
                     </div>
                 </div>
             </section>
-
+            <Footer />
         </div>
     );
 }

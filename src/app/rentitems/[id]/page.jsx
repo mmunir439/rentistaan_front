@@ -1,104 +1,95 @@
+
 "use client";
-
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import api from "@/lib/axios";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar_2";
 
-export default function RentItemDetails() {
+export default function Itembyid() {
+    const [itemvalue, setItemvlaue] = useState({});
     const { id } = useParams();
-    const [item, setItem] = useState(null);
-    const [error, setError] = useState(null);
+    async function getbyid() {
+        try {
+            const response = await api.get(`/rentitem/${id}`);
+            setItemvlaue(response.data.data);
+        } catch (err) {
+            console.error("Error fetching item:", err);
+        }
+    }
 
     useEffect(() => {
-        async function fetchItem() {
-            try {
-                const res = await api.get(`/rentitem/${id}`);
-                const data = res.data.data;
-
-                if (Array.isArray(data) && data.length > 0) {
-                    setItem(data[0]);
-                } else {
-                    setError("Item not found.");
-                }
-            } catch (err) {
-                console.error("Error fetching item:", err);
-                setError("Failed to load item details.");
-            }
-        }
-
-        fetchItem();
-    }, [id]);
-
-    if (error) return <p className="text-red-600 p-6">{error}</p>;
-    if (!item) return <p className="p-6">Loading...</p>;
+        getbyid();
+    }, []);
 
     return (
-        <div className="min-h-screen bg-orange-50 text-gray-800">
-            {/* 🚀 Navbar */}
-            <nav className="bg-orange-500 text-white p-4 shadow-md">
-                <div className="container mx-auto flex justify-between items-center">
-                    <h1 className="text-2xl font-bold">Rentistaaaan</h1>
-                    <div className="flex space-x-6">
-                        <Link href="/" className="hover:underline">Home</Link>
-                        <Link href="#" className="hover:underline">Explore</Link>
-                        <Link href="#" className="hover:underline">About</Link>
+        <div>
+            <Navbar />
+            <section className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
+                    <div className="md:flex">
+                        {/* Image Section */}
+                        <div className="md:w-1/2">
+                            {itemvalue.image && itemvalue.image[0] ? (
+                                <img
+                                    src={itemvalue.image[0].url}
+                                    alt={itemvalue.title}
+                                    className="w-full h-80 object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-80 bg-gray-200 flex items-center justify-center text-gray-500">
+                                    No Image
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Details Section */}
+                        <div className="md:w-1/2 p-6 space-y-4">
+                            <h2 className="text-2xl font-bold text-gray-800">{itemvalue.title}</h2>
+                            <p className="text-sm text-gray-600">catagory:{itemvalue.category}</p>
+                            <p className="text-lg font-semibold text-green-700">₨ {itemvalue.pricePerHour} / hour</p>
+                            <p className="text-sm text-gray-500">📍 Location: {itemvalue.location}</p>
+
+                            <p>
+                                <span className="font-semibold">Status: </span>
+                                <span className={itemvalue.isRented ? "text-red-600 font-semibold" : "text-green-600 font-semibold"}>
+                                    {itemvalue.isRented ? "Already Rented" : "Available to Rent"}
+                                </span>
+                            </p>
+
+                            <div className="text-gray-700 text-sm leading-relaxed">
+                                <p>
+                                    {itemvalue.title} is available for rent and offers exceptional reliability, quality, and performance.
+                                    Whether you're looking for convenience, functionality, or simply a cost-effective option, this product
+                                    is well-suited to meet your needs. It is regularly inspected and maintained to ensure the best experience.
+                                    Ideal for short-term use, events, work tasks, or personal needs — rent it today and enjoy flexibility
+                                    without the hassle of ownership.
+                                </p>
+                            </div>
+                            {!itemvalue.isRented ? (
+                                <button
+                                    className="mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-xl transition-all"
+                                    onClick={() => {
+                                        // navigate to booking page (update URL as per your routing)
+                                        window.location.href = `/rent/${itemvalue._id}`;
+                                    }}
+                                >
+                                    Rent Now
+                                </button>
+                            ) : (
+                                <button
+                                    className="mt-4 w-full bg-gray-300 text-gray-600 font-semibold py-2 px-4 rounded-xl cursor-not-allowed"
+                                    disabled
+                                >
+                                    Already Rented
+                                </button>
+                            )}
+
+                        </div>
                     </div>
                 </div>
-            </nav>
-
-            {/* 🎯 Main Content */}
-            <main className="p-4 md:p-6 max-w-3xl mx-auto bg-white shadow rounded-lg mt-6">
-                {/* 🖼️ Image */}
-                {item.image?.length > 0 && (
-                    <div className="flex justify-center mb-4">
-                        <img
-                            src={
-                                item.image[0].url.startsWith("http")
-                                    ? item.image[0].url
-                                    : `/uploads/${item.image[0].url}`
-                            }
-                            alt={item.title}
-                            className="w-full max-w-[500px] h-[250px] object-cover rounded-lg shadow-md"
-                        />
-                    </div>
-                )}
-
-                {/* 📛 Title */}
-                <h1 className="text-2xl md:text-3xl font-bold text-orange-600 mb-2">{item.title}</h1>
-
-                {/* 📝 Description */}
-                <p className="text-gray-700 mb-4">{item.description}</p>
-
-                {/* 📂 Category */}
-                <p className="mb-2 text-sm text-gray-800">
-                    <strong className="text-orange-600">Category:</strong> {item.category}
-                </p>
-
-                {/* 📍 Location */}
-                <p className="mb-2 text-sm text-gray-800">
-                    <strong className="text-orange-600">Location:</strong> {item.location}
-                </p>
-
-                {/* 💰 Price */}
-                <p className="mb-2 text-sm text-gray-800">
-                    <strong className="text-orange-600">Price Per Hour:</strong> Rs {item.pricePerHour}
-                </p>
-
-                {/* ⚙️ Features */}
-                {item.features && typeof item.features === "object" && (
-                    <div className="mt-4">
-                        <h2 className="font-semibold text-orange-600 mb-1">Features:</h2>
-                        <ul className="list-disc pl-5 text-gray-700 text-sm">
-                            {Object.entries(item.features).map(([key, value]) => (
-                                <li key={key}>
-                                    <strong>{key}:</strong> {value}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-            </main>
+            </section>
+            <Footer />
         </div>
     );
 }

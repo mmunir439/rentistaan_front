@@ -30,19 +30,25 @@ export default function Footer() {
                 <div>
                     <h3 className="text-lg font-semibold mb-3">Contact</h3>
                     <ul className="space-y-2 text-sm text-gray-300">
-                        <a
+                        <Link
                             href="https://mail.google.com/mail/?view=cm&fs=1&to=hrcoder3@gmail.com"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="hover:text-teal-400"
                         >
                             hrcoder3@gmail.com
-                        </a>
-
+                        </Link>
 
                         <li className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-teal-400" />
-                            Islamabad, Pakistan
+                            <Link
+                                href="https://www.google.com/maps/place/33.719227,73.035078"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 text-teal-600 hover:text-teal-800"
+                            >
+                                <MapPin className="w-4 h-4" />
+                                Islamabad , Pakistan
+                            </Link>
                         </li>
                     </ul>
                 </div>

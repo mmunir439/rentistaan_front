@@ -1,7 +1,8 @@
 "use client";
-import Herosection from "@/components/herosection";
+import ItemList from "@/components/ItemList";
 import Footer from "@/components/Footer";
 import React, { useState, useEffect } from "react";
+import { navigationLinks } from "@/lib/navigationLinks";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import {
@@ -25,12 +26,6 @@ export default function NavBar() {
   useEffect(() => {
     setLoading(false);
   }, [pathname]);
-
-  const navigationLinks = [
-    { href: "/rentitems/postItem", label: "Post Item", Icon: IoIosAddCircle },
-    { href: "/rentitems", label: "Rent Item", Icon: FaShoppingBag },
-  ];
-
   // Handles navigation and triggers loading spinner
   const handleNav = async (href) => {
     if (href === pathname) return; // Do nothing if already on the target page
@@ -52,13 +47,13 @@ export default function NavBar() {
       <nav className="w-full bg-white shadow-md sticky top-0 z-50">
         <div className="mx-auto flex items-center justify-between px-4 py-3 max-w-7xl">
           {/* ── Logo ── */}
-          <button
-            onClick={() => handleNav("/")}
+          <Link
+            href="/"
             className="flex items-center gap-2 text-2xl font-bold text-orange-500"
           >
             <FaBoxOpen className="text-3xl" />
             Rentistaan
-          </button>
+          </Link>
 
           {/* ── Hamburger (Mobile) ── */}
           <button
@@ -161,7 +156,7 @@ export default function NavBar() {
           </div>
         )}
       </nav>
-      <Herosection />
+      <ItemList />
       <Footer />
     </div>
   );

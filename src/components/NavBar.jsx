@@ -14,7 +14,7 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           <Link href="/" className="text-gray-700 hover:text-[#f85606] transition">
             Home
-          </Link> 
+          </Link>
 
           {user &&
             navigationLinks.map(({ href, label }) => (
