@@ -1,9 +1,9 @@
 "use client";
-import { useRouter, usePathname } from "next/navigation";
-import { navigationLinks } from "@/lib/navigationLinks";
-import React, { useState, useEffect } from "react";
+import { logoutUser } from "@/utils/token";
+
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import api from "@/lib/axios";
+import { useRouter, usePathname } from "next/navigation";
 import {
     FaBoxOpen,
     FaSearch,
@@ -11,16 +11,19 @@ import {
     FaBars,
     FaTimes,
 } from "react-icons/fa";
-import { IoIosAddCircle } from "react-icons/io";
 import { MdAccountCircle } from "react-icons/md";
+import { IoIosAddCircle } from "react-icons/io";
+import { navigationLinks } from "@/lib/navigationLinks";
 
 export default function Homenavbar({ inputValue, setInputValue }) {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const router = useRouter();
     const pathname = usePathname();
+    const dropdownRef = useRef(null);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -31,14 +34,23 @@ export default function Homenavbar({ inputValue, setInputValue }) {
         setLoading(false);
     }, [pathname]);
 
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
     const handleNav = async (href) => {
         if (href === pathname) return;
         setLoading(true);
         try {
             await router.push(href);
-            if (href === "/") {
-                router.refresh();
-            }
+            if (href === "/") router.refresh();
         } catch (err) {
             console.error("Navigation error:", err);
             setLoading(false);
@@ -58,7 +70,7 @@ export default function Homenavbar({ inputValue, setInputValue }) {
                         Rentistaan
                     </Link>
 
-                    {/* ── Hamburger (Mobile) ── */}
+                    {/* ── Hamburger ── */}
                     <button
                         className="md:hidden text-2xl text-gray-700"
                         onClick={() => setMenuOpen(!menuOpen)}
@@ -85,7 +97,7 @@ export default function Homenavbar({ inputValue, setInputValue }) {
                         </div>
                     </div>
 
-                    {/* ── Desktop Nav ── */}
+                    {/* ── Desktop Menu ── */}
                     <div className="hidden md:flex items-center gap-4">
                         {navigationLinks.map(({ href, label, Icon }) => (
                             <button
@@ -98,12 +110,37 @@ export default function Homenavbar({ inputValue, setInputValue }) {
                             </button>
                         ))}
 
-                        {/* ── Account Icon or Auth Buttons ── */}
                         <div className="flex items-center gap-3 ml-4">
                             {isLoggedIn ? (
-                                <Link href="/dashboard">
-                                    <MdAccountCircle className="text-2xl text-orange-500 hover:text-orange-600 cursor-pointer" />
-                                </Link>
+                                <div className="relative group" ref={dropdownRef}>
+                                    <MdAccountCircle
+                                        className="text-2xl text-orange-500 hover:text-orange-600 cursor-pointer"
+                                        onClick={() => setShowDropdown(!showDropdown)}
+                                    />
+                                    {showDropdown && (
+                                        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md z-50">
+                                            <Link
+                                                href="/dashboard"
+                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50"
+                                            >
+                                                Dashboard
+                                            </Link>
+                                            <Link
+                                                href="/profile"
+                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50"
+                                            >
+                                                Profile
+                                            </Link>
+                                            <button
+                                                onClick={() => logoutUser(router)}
+                                                className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50"
+                                            >
+                                                Logout
+                                            </button>
+
+                                        </div>
+                                    )}
+                                </div>
                             ) : (
                                 <>
                                     <button
@@ -144,14 +181,33 @@ export default function Homenavbar({ inputValue, setInputValue }) {
                             ))}
                             <hr />
                             {isLoggedIn ? (
-                                <Link
-                                    href="/dashboard"
-                                    className="flex items-center gap-2 text-orange-500 hover:text-orange-600"
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    <MdAccountCircle className="text-lg" />
-                                    Dashboard
-                                </Link>
+                                <>
+                                    <Link
+                                        href="/dashboard"
+                                        className="flex items-center gap-2 text-orange-500 hover:text-orange-600"
+                                        onClick={() => setMenuOpen(false)}
+                                    >
+                                        <MdAccountCircle className="text-lg" />
+                                        Dashboard
+                                    </Link>
+                                    <Link
+                                        href="/profile"
+                                        className="flex items-center gap-2 text-orange-500 hover:text-orange-600"
+                                        onClick={() => setMenuOpen(false)}
+                                    >
+                                        Profile
+                                    </Link>
+                                    <button
+                                        onClick={() => {
+                                            logoutUser(router);
+                                            setMenuOpen(false); // Close mobile dropdown
+                                        }}
+                                        className="text-left text-sm text-red-500 hover:text-red-600"
+                                    >
+                                        Logout
+                                    </button>
+
+                                </>
                             ) : (
                                 <>
                                     <button
@@ -178,7 +234,7 @@ export default function Homenavbar({ inputValue, setInputValue }) {
                     </div>
                 )}
 
-                {/* ── Loader Overlay ── */}
+                {/* ── Loading Overlay ── */}
                 {loading && (
                     <div className="fixed inset-0 z-[999] bg-black bg-opacity-20 flex items-center justify-center">
                         <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>

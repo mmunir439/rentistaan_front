@@ -10,4 +10,9 @@ export function getToken() {
 export function clearToken() {
   localStorage.removeItem("token");
 }
-// Professional, reusable way to manage JWT.
+
+// Optional: logout helper function
+export function logoutUser(router) {
+  clearToken();
+  router.push("/login");
+}
