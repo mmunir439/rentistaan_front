@@ -71,7 +71,7 @@ export default function Itembyid() {
                                     className="mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-xl transition-all"
                                     onClick={() => {
                                         // navigate to booking page (update URL as per your routing)
-                                        window.location.href = `/rent/${itemvalue._id}`;
+                                        window.location.href = `/booking/${itemvalue._id}`;
                                     }}
                                 >
                                     Rent Now
