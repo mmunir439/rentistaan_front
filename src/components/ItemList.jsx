@@ -2,7 +2,7 @@
 import api from "@/lib/axios";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-
+import RentButton from "@/components/RentButton";
 export default function ItemList({ inputValue }) {
     const [items, setItems] = useState([]);
     const [visibleCount, setVisibleCount] = useState(8); // Initial visible count
@@ -62,11 +62,10 @@ export default function ItemList({ inputValue }) {
                                     <p className="text-sm text-gray-600">{item.location}</p>
                                     <p className="text-md text-red-500 font-bold">Rs {item.pricePerHour} / hour</p>
 
-                                    <Link href={`/rentitems/${item._id}`} className="mt-2 inline-block">
-                                        <button className="px-4 py-1 bg-gradient-to-r from-orange-400 to-red-400 text-white text-sm rounded-full hover:scale-105 transition">
-                                            Rent Now
-                                        </button>
-                                    </Link>
+                                    <div className="mt-2">
+                                        <RentButton itemId={item._id} />
+                                    </div>
+
                                 </div>
                             </div>
                         ))}
