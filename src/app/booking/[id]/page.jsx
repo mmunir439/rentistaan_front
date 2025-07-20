@@ -1,97 +1,116 @@
 "use client";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import api from "@/lib/axios";
-import { getToken } from "@/utils/token"; // If using JWT in frontend
+import { getToken } from "@/utils/token";
 import Navbar from "@/components/Navbar_2";
 import Footer from "@/components/Footer";
 
 export default function BookItemPage() {
-    const { id } = useParams(); // rentitemId from URL
+    const { id } = useParams();
     const router = useRouter();
 
-    const [form, setForm] = useState({
-        startTime: "",
-        endTime: "",
-    });
+    const [form, setForm] = useState({ startTime: "", endTime: "" });
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        if (!id) setError("❌ Invalid item ID");
+    }, [id]);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+        setMessage("");
+        setError("");
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setMessage("");
+        setError("");
 
         try {
-            const token = getToken(); // ✅ Get token from localStorage
-            const res = await api.post(
-                `/tookonRent/${id}`,
-                form,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`, // ✅ Send it here
-                    },
-                }
-            );
+            const token = getToken();
+            if (!token) throw new Error("Please log in.");
 
-            setMessage("Booking requested successfully ✅");
-            router.push("/dashboard");
+            const res = await api.post(`/tookonRent/${id}`, {
+                startTime: Number(form.startTime),
+                endTime: Number(form.endTime),
+            }, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            setMessage("✅ Booking requested successfully!");
+            setTimeout(() => router.push("/dashboard"), 1500);
         } catch (err) {
-            console.log(err.response?.data); // ✅ See actual backend error
-            setMessage(err?.response?.data?.msg || "Booking failed ❌");
+            const msg = err.response?.data?.message || err.message || "Booking failed.";
+            setError(msg);
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <>
+        <div className="min-h-screen flex flex-col bg-[#F5F5F5]">
             <Navbar />
-            <section className="min-h-screen flex justify-center items-center bg-gray-100 py-10">
+            <section className="flex-grow flex items-center justify-center p-4">
                 <form
                     onSubmit={handleSubmit}
-                    className="bg-white p-8 rounded-xl shadow-md w-full max-w-md"
+                    className="w-full max-w-md bg-white p-6 rounded-lg shadow-md space-y-6"
                 >
-                    <h2 className="text-2xl font-semibold mb-4 text-center">Book Item</h2>
+                    <h2 className="text-2xl font-bold text-center text-[#FF5722]">
+                        Book Item
+                    </h2>
 
-                    <label className="block mb-2">Start Time:</label>
-                    <input
-                        type="datetime-local"
-                        name="startTime"
-                        value={form.startTime}
-                        onChange={handleChange}
-                        required
-                        className="w-full mb-4 px-3 py-2 border rounded"
-                    />
+                    {error && (
+                        <div className="text-[#D32F2F] bg-[#FFCDD2] p-3 rounded">
+                            {error}
+                        </div>
+                    )}
+                    {message && (
+                        <div className="text-green-800 bg-green-100 p-3 rounded">
+                            {message}
+                        </div>
+                    )}
 
-                    <label className="block mb-2">End Time:</label>
-                    <input
-                        type="datetime-local"
-                        name="endTime"
-                        value={form.endTime}
-                        onChange={handleChange}
-                        required
-                        className="w-full mb-4 px-3 py-2 border rounded"
-                    />
+                    {["Start Hour", "End Hour"].map((label, idx) => (
+                        <div key={label}>
+                            <label className="block mb-1 font-medium text-[#333333]">
+                                {label}:
+                            </label>
+                            <select
+                                name={idx === 0 ? "startTime" : "endTime"}
+                                value={idx === 0 ? form.startTime : form.endTime}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition"
+                            >
+                                <option value="">Select hour</option>
+                                {[...Array(24).keys()].map((h) => (
+                                    <option key={h} value={h}>
+                                        {h}:00
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    ))}
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        className={`w-full py-3 font-semibold text-white rounded-lg transition ${loading
+                            ? "bg-[#FFCCBC] cursor-not-allowed text-[#E64A19]"
+                            : "bg-[#FF5722] hover:bg-[#E64A19]"
+                            }`}
                     >
                         {loading ? "Booking..." : "Confirm Booking"}
                     </button>
-
-                    {message && (
-                        <p className="mt-4 text-center text-sm text-gray-700">{message}</p>
-                    )}
                 </form>
             </section>
             <Footer />
-        </>
+        </div>
     );
 }

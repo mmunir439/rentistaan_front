@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
@@ -9,6 +8,7 @@ import Navbar from "@/components/Navbar_2";
 export default function Itembyid() {
     const [itemvalue, setItemvlaue] = useState({});
     const { id } = useParams();
+
     async function getbyid() {
         try {
             const response = await api.get(`/rentitem/${id}`);
@@ -23,72 +23,67 @@ export default function Itembyid() {
     }, []);
 
     return (
-        <div>
+        <div className="min-h-screen bg-slate-100">
             <Navbar />
-            <section className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
-                    <div className="md:flex">
+
+            <main className="max-w-4xl mx-auto px-4 py-10">
+                <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <div className="sm:flex">
                         {/* Image Section */}
-                        <div className="md:w-1/2">
-                            {itemvalue.image && itemvalue.image[0] ? (
-                                <img
-                                    src={itemvalue.image[0].url}
-                                    alt={itemvalue.title}
-                                    className="w-full h-80 object-cover"
-                                />
-                            ) : (
-                                <div className="w-full h-80 bg-gray-200 flex items-center justify-center text-gray-500">
-                                    No Image
-                                </div>
-                            )}
+                        <div className="sm:w-1/2 h-72 sm:h-auto overflow-hidden">
+                            <img
+                                src={itemvalue.image?.[0]?.url || "/no-image.png"}
+                                alt={itemvalue.title}
+                                className="object-cover w-full h-full"
+                            />
                         </div>
 
                         {/* Details Section */}
-                        <div className="md:w-1/2 p-6 space-y-4">
-                            <h2 className="text-2xl font-bold text-gray-800">{itemvalue.title}</h2>
-                            <p className="text-sm text-gray-600">catagory:{itemvalue.category}</p>
-                            <p className="text-lg font-semibold text-green-700">₨ {itemvalue.pricePerHour} / hour</p>
-                            <p className="text-sm text-gray-500">📍 Location: {itemvalue.location}</p>
+                        <div className="sm:w-1/2 p-6 flex flex-col justify-between space-y-4">
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-800 mb-2">{itemvalue.title}</h2>
+                                <p className="text-sm text-gray-500">📂 {itemvalue.category}</p>
+                                <p className="text-lg font-semibold text-orange-600 mt-2">
+                                    ₨ {itemvalue.pricePerHour} / hour
+                                </p>
+                                <p className="text-sm text-gray-500 mt-1">📍 {itemvalue.location}</p>
 
-                            <p>
-                                <span className="font-semibold">Status: </span>
-                                <span className={itemvalue.isRented ? "text-red-600 font-semibold" : "text-green-600 font-semibold"}>
-                                    {itemvalue.isRented ? "Already Rented" : "Available to Rent"}
-                                </span>
-                            </p>
+                                <p className="mt-3">
+                                    <span className="font-semibold">Status: </span>
+                                    <span
+                                        className={`font-semibold ${itemvalue.isRented ? "text-red-600" : "text-green-600"
+                                            }`}
+                                    >
+                                        {itemvalue.isRented ? "Already Rented" : "Available"}
+                                    </span>
+                                </p>
 
-                            <div className="text-gray-700 text-sm leading-relaxed">
-                                <p>
-                                    {itemvalue.title} is available for rent and offers exceptional reliability, quality, and performance.
-                                    Whether you're looking for convenience, functionality, or simply a cost-effective option, this product
-                                    is well-suited to meet your needs. It is regularly inspected and maintained to ensure the best experience.
-                                    Ideal for short-term use, events, work tasks, or personal needs — rent it today and enjoy flexibility
-                                    without the hassle of ownership.
+                                <p className="text-sm text-gray-700 mt-4 leading-relaxed">
+                                    {itemvalue.description || `No description provided.`}
                                 </p>
                             </div>
+
+                            {/* CTA */}
                             {!itemvalue.isRented ? (
                                 <button
-                                    className="mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-xl transition-all"
-                                    onClick={() => {
-                                        // navigate to booking page (update URL as per your routing)
-                                        window.location.href = `/booking/${itemvalue._id}`;
-                                    }}
+                                    onClick={() => window.location.href = `/booking/${itemvalue._id}`}
+                                    className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-xl transition-all"
                                 >
                                     Rent Now
                                 </button>
                             ) : (
                                 <button
-                                    className="mt-4 w-full bg-gray-300 text-gray-600 font-semibold py-2 px-4 rounded-xl cursor-not-allowed"
                                     disabled
+                                    className="w-full bg-gray-300 text-gray-600 font-semibold py-2 px-4 rounded-xl cursor-not-allowed"
                                 >
                                     Already Rented
                                 </button>
                             )}
-
                         </div>
                     </div>
                 </div>
-            </section>
+            </main>
+
             <Footer />
         </div>
     );

@@ -6,20 +6,17 @@ import Footer from "@/components/Footer";
 import useUser from "@/lib/useUser";
 import api from "@/lib/axios";
 import Link from "next/link";
+
 export default function UserDashboard() {
     const user = useUser();
     const [bookings, setBookings] = useState([]);
 
-
-    // ──────────────────────────────────────────
-    // Fetch user bookings once we know the user
-    // ──────────────────────────────────────────
     useEffect(() => {
         if (!user) return;
 
         (async () => {
             try {
-                const { data } = await api.get("/bookings/my");
+                const { data } = await api.get("/tookonRent/my");
                 setBookings(data.bookings);
             } catch (err) {
                 console.error("Error fetching bookings:", err);
@@ -35,13 +32,27 @@ export default function UserDashboard() {
         );
     }
 
+    const getStatusColor = (status) => {
+        switch (status) {
+            case "approved":
+                return "bg-green-100 text-green-700";
+            case "pending":
+                return "bg-yellow-100 text-yellow-700";
+            case "rejected":
+            case "cancelled":
+                return "bg-red-100 text-red-700";
+            case "completed":
+                return "bg-blue-100 text-blue-700";
+            default:
+                return "bg-gray-100 text-gray-700";
+        }
+    };
+
     return (
         <>
             <Navbar />
 
-            {/* Header / Hero */}
             <header className="relative z-10 isolate overflow-hidden bg-gradient-to-r from-[#f85606]/90 to-orange-400/80 pb-32 pt-16">
-
                 <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
                     <h1 className="text-4xl sm:text-5xl font-extrabold text-white drop-shadow-md">
                         Welcome back, {user.name}!
@@ -52,29 +63,22 @@ export default function UserDashboard() {
                 </div>
             </header>
 
-            {/* Main content */}
             <main className="bg-slate-50 min-h-screen pb-16">
                 <section className="relative z-20 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 -mt-24">
-
-                    {/* Profile “card” */}
                     <div className="rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-black/5">
-
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                            {/* Profile “card” */}
                             <div className="rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-black/5">
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                     <div>
                                         <h2 className="text-2xl font-bold text-gray-800">{user.name}</h2>
                                         <p className="mt-1 text-gray-600">{user.email}</p>
 
-                                        {/* Phone */}
                                         {user.phone && (
                                             <p className="mt-1 text-sm text-gray-500">
                                                 📞 <span className="ml-1">{user.phone}</span>
                                             </p>
                                         )}
 
-                                        {/* Address */}
                                         {user.address && (
                                             <p className="mt-1 text-sm text-gray-500">
                                                 🏠 <span className="ml-1">{user.address}</span>
@@ -91,13 +95,9 @@ export default function UserDashboard() {
                                     </div>
                                 </div>
                             </div>
-
-
-
                         </div>
                     </div>
 
-                    {/* Bookings grid */}
                     <h3 className="mt-[30px] mb-8 text-2xl font-semibold text-[#f85606]">
                         Your Bookings
                     </h3>
@@ -105,75 +105,37 @@ export default function UserDashboard() {
                     {bookings.length === 0 ? (
                         <p className="text-gray-600">You haven’t booked any items yet.</p>
                     ) : (
-                        <ul
-                            className="
-                grid gap-6
-                sm:grid-cols-2
-                lg:grid-cols-3
-              "
-                        >
+                        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                             {bookings.map((booking) => {
-                                const { _id, item, startTime, endTime, totalPrice, totalHours, status } = booking;
-
-                                // Choose a badge colour
-                                const statusColor =
-                                    status === "approved"
-                                        ? "bg-green-100 text-green-700"
-                                        : status === "pending"
-                                            ? "bg-yellow-100 text-yellow-700"
-                                            : "bg-red-100 text-red-700";
+                                const { _id, item, totalPrice, status } = booking;
+                                const statusColor = getStatusColor(status);
 
                                 return (
                                     <li
                                         key={_id}
-                                        className="flex flex-col overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/5 transition hover:shadow-lg"
+                                        className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-gray-200 transition hover:shadow-xl"
                                     >
-                                        {/* image */}
-                                        <img
-                                            src={item?.image?.[0]?.url || "/no-image.png"}
-                                            alt={item?.title}
-                                            className="h-40 w-full object-cover sm:h-44"
-                                        />
+                                        {/* Image */}
+                                        <div className="relative h-48 overflow-hidden">
+                                            <img
+                                                src={item?.image?.[0]?.url || "/no-image.png"}
+                                                alt={item?.title}
+                                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                            />
+                                            <span
+                                                className={`absolute top-3 right-3 rounded-full px-3 py-1 text-xs font-semibold capitalize shadow-sm ${statusColor}`}
+                                            >
+                                                {status}
+                                            </span>
+                                        </div>
 
-                                        {/* details */}
-                                        <div className="flex flex-1 flex-col p-4">
-                                            <h4 className="truncate text-lg font-semibold text-gray-800">
-                                                {item?.title}
-                                            </h4>
-                                            <p className="truncate text-sm text-gray-500">
-                                                📍 {item?.location}
+                                        {/* Info */}
+                                        <div className="flex flex-col gap-2 p-4">
+                                            <h4 className="text-lg font-bold text-gray-800 truncate">{item?.title}</h4>
+
+                                            <p className="text-md font-semibold text-orange-500">
+                                                ₨ {totalPrice}
                                             </p>
-
-                                            <div className="mt-3 text-sm text-gray-600">
-                                                <p>
-                                                    ⏰{" "}
-                                                    {new Date(startTime).toLocaleString(undefined, {
-                                                        dateStyle: "medium",
-                                                        timeStyle: "short",
-                                                    })}
-                                                </p>
-                                                <p>
-                                                    ⏳{" "}
-                                                    {new Date(endTime).toLocaleString(undefined, {
-                                                        dateStyle: "medium",
-                                                        timeStyle: "short",
-                                                    })}
-                                                </p>
-                                            </div>
-
-                                            <div className="mt-auto flex items-center justify-between pt-4">
-                                                <p className="font-medium text-green-700">
-                                                    ₨ {totalPrice}{" "}
-                                                    <span className="text-xs text-gray-500">
-                                                        ({totalHours} h)
-                                                    </span>
-                                                </p>
-                                                <span
-                                                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusColor}`}
-                                                >
-                                                    {status}
-                                                </span>
-                                            </div>
                                         </div>
                                     </li>
                                 );

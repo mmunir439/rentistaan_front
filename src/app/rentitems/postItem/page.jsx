@@ -20,6 +20,7 @@ export default function PostItemPage() {
 
     const [image, setImage] = useState(null);
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -32,10 +33,12 @@ export default function PostItemPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+        setLoading(true);
 
         const token = localStorage.getItem("token");
         if (!token) {
             setError("Please log in first.");
+            setLoading(false);
             return;
         }
 
@@ -60,28 +63,34 @@ export default function PostItemPage() {
                 router.push("/rentitems");
             } else {
                 setError(res.data.message || "Something went wrong");
+                setLoading(false);
             }
         } catch (err) {
             console.error(err);
             setError(err.response?.data?.message || "Upload failed");
+            setLoading(false);
         }
     };
 
     return (
-        <div>
+        <div className="min-h-screen flex flex-col bg-[#F5F5F5]">
             <Navbar />
-            <main className="p-6 max-w-xl mx-auto bg-white shadow-lg rounded-md">
-                <h1 className="text-2xl font-bold mb-6 text-gray-800">Post New Rent Item</h1>
+            <main className="flex-grow p-6 max-w-xl mx-auto bg-white shadow-lg rounded-md">
+                <h1 className="text-3xl font-bold mb-6 text-[#FF5722] text-center">Post New Rent Item</h1>
 
-                {error && <p className="text-red-500 mb-4">{error}</p>}
+                {error && (
+                    <div className="mb-6 text-center text-[#E64A19] font-semibold bg-[#FFCCBC] p-3 rounded">
+                        {error}
+                    </div>
+                )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4 px-2 py-4 max-w-md mx-auto">
                     <input
                         name="title"
                         placeholder="Title"
                         onChange={handleChange}
                         required
-                        className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition"
                     />
 
                     <textarea
@@ -89,11 +98,10 @@ export default function PostItemPage() {
                         placeholder="Description"
                         onChange={handleChange}
                         required
-                        className="w-full p-3 border rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                         rows={3}
+                        className="w-full p-3 border border-gray-300 rounded-md shadow-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition"
                     />
 
-                    {/* ✅ Category using datalist */}
                     <div>
                         <input
                             name="category"
@@ -101,7 +109,7 @@ export default function PostItemPage() {
                             placeholder="Select a category"
                             onChange={handleChange}
                             required
-                            className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition"
                         />
                         <datalist id="categories">
                             <option value="Vehicles" />
@@ -121,7 +129,9 @@ export default function PostItemPage() {
                         type="number"
                         onChange={handleChange}
                         required
-                        className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        min={0}
+                        step={0.01}
+                        className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition"
                     />
 
                     <input
@@ -129,14 +139,16 @@ export default function PostItemPage() {
                         placeholder="Location"
                         onChange={handleChange}
                         required
-                        className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition"
                     />
 
-                    <input
+                    <textarea
                         name="features"
-                        placeholder='Features (e.g. {"battery":"Extra Battery"})'
+                        placeholder="Enter features"
                         onChange={handleChange}
-                        className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        maxLength={3000}
+                        rows={5}
+                        className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition resize-none"
                     />
 
                     <input
@@ -144,16 +156,21 @@ export default function PostItemPage() {
                         accept="image/*"
                         onChange={handleImageChange}
                         required
-                        className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition"
                     />
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded transition duration-200"
+                        disabled={loading}
+                        className={`w-full py-3 rounded-md font-semibold text-white transition duration-300 ${loading
+                            ? "bg-[#FFCCBC] cursor-not-allowed text-[#E64A19]"
+                            : "bg-[#FF5722] hover:bg-[#E64A19]"
+                            }`}
                     >
-                        Submit
+                        {loading ? "Posting item..." : "Submit"}
                     </button>
                 </form>
+
             </main>
             <Footer />
         </div>
