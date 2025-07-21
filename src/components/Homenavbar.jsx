@@ -129,10 +129,10 @@ export default function Homenavbar({ inputValue, setInputValue }) {
                                                 Dashboard
                                             </Link>
                                             <Link
-                                                href="/profile"
+                                                href="/edit-profile"
                                                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50"
                                             >
-                                                Profile
+                                                Edit Profile
                                             </Link>
                                             <button
                                                 onClick={() => logoutUser(router)}
@@ -194,11 +194,11 @@ export default function Homenavbar({ inputValue, setInputValue }) {
                                         Dashboard
                                     </Link>
                                     <Link
-                                        href="/profile"
+                                        href="/edit-profile"
                                         className="flex items-center gap-2 text-orange-500 hover:text-orange-600"
                                         onClick={() => setMenuOpen(false)}
                                     >
-                                        Profile
+                                        edit-profile
                                     </Link>
                                     <button
                                         onClick={() => {
