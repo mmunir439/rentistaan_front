@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
@@ -7,14 +8,37 @@ import Navbar from "@/components/Navbar_2";
 
 export default function Itembyid() {
     const [itemvalue, setItemvlaue] = useState({});
+    const [durationDetails, setDurationDetails] = useState(null);
     const { id } = useParams();
 
     async function getbyid() {
         try {
             const response = await api.get(`/rentitem/${id}`);
             setItemvlaue(response.data.data);
+
+            const { startTime, endTime, pricePerHour } = response.data.data;
+            if (startTime && endTime) {
+                const start = new Date(startTime);
+                const end = new Date(endTime);
+                const totalHours = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60)));
+                const totalPrice = totalHours * pricePerHour;
+
+                setDurationDetails({ totalHours, totalPrice });
+            } else {
+                setDurationDetails(null);
+            }
         } catch (err) {
             console.error("Error fetching item:", err);
+        }
+    }
+
+    async function handleToggleStatus() {
+        try {
+            const res = await api.put(`/rentitem/${itemvalue._id}/toggle-status`);
+            setItemvlaue(res.data.data); // Refresh status
+            setDurationDetails(null); // Reset rental info
+        } catch (err) {
+            console.error("Error toggling status:", err);
         }
     }
 
@@ -41,7 +65,9 @@ export default function Itembyid() {
                         {/* Details Section */}
                         <div className="sm:w-1/2 p-6 flex flex-col justify-between space-y-4">
                             <div>
-                                <h2 className="text-2xl font-bold text-gray-800 mb-2">{itemvalue.title}</h2>
+                                <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                                    {itemvalue.title}
+                                </h2>
                                 <p className="text-sm text-gray-500">📂 {itemvalue.category}</p>
                                 <p className="text-lg font-semibold text-orange-600 mt-2">
                                     ₨ {itemvalue.pricePerHour} / hour
@@ -58,6 +84,19 @@ export default function Itembyid() {
                                     </span>
                                 </p>
 
+                                {durationDetails && (
+                                    <div className="mt-4 space-y-1 text-sm text-gray-700">
+                                        <p>
+                                            ⏰ <span className="font-semibold">Total Hours:</span>{" "}
+                                            {durationDetails.totalHours} hours
+                                        </p>
+                                        <p>
+                                            💵 <span className="font-semibold">Total Price:</span>{" "}
+                                            ₨ {durationDetails.totalPrice}
+                                        </p>
+                                    </div>
+                                )}
+
                                 <p className="text-sm text-gray-700 mt-4 leading-relaxed">
                                     {itemvalue.description || `No description provided.`}
                                 </p>
@@ -72,12 +111,20 @@ export default function Itembyid() {
                                     Rent Now
                                 </button>
                             ) : (
-                                <button
-                                    disabled
-                                    className="w-full bg-gray-300 text-gray-600 font-semibold py-2 px-4 rounded-xl cursor-not-allowed"
-                                >
-                                    Already Rented
-                                </button>
+                                <>
+                                    <button
+                                        disabled
+                                        className="w-full bg-gray-300 text-gray-600 font-semibold py-2 px-4 rounded-xl cursor-not-allowed"
+                                    >
+                                        Already Rented
+                                    </button>
+                                    <button
+                                        onClick={handleToggleStatus}
+                                        className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-xl transition-all mt-2"
+                                    >
+                                        Give Back (Make Available)
+                                    </button>
+                                </>
                             )}
                         </div>
                     </div>

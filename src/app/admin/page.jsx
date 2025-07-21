@@ -190,20 +190,24 @@ export default function AdminDashboard() {
                                 <p className="text-gray-500">No bookings available.</p>
                             ) : (
                                 <div className="space-y-4">
-                                    {bookings.map((booking) => (
+                                    {bookings.map((booking, index) => (
                                         <div
                                             key={booking._id}
+                                            value={index}
                                             className="border border-gray-200 rounded-lg p-4 shadow-sm bg-[#FAFAFA]"
                                         >
                                             <div className="flex justify-between items-start">
                                                 <div className="flex flex-col">
                                                     <p className="text-sm text-gray-600">
                                                         📦 <span className="font-semibold text-[#333]">Item:</span>{" "}
-                                                        <span className="text-[#f85606]">{booking.item.title}</span>
+                                                        <span className="text-[#f85606]">{booking.item?.title || "Unknown Item"}
+                                                        </span>
                                                     </p>
                                                     <p className="text-sm text-gray-600 mt-1">
                                                         👤 <span className="font-semibold text-[#333]">Renter:</span>{" "}
-                                                        {booking.renter.name} ({booking.renter.email})
+                                                        {/* {booking.renter.name} ({booking.renter.email}) */}
+                                                        {booking.renter?.name || "Unknown Renter"} ({booking.renter?.email || "No Email"})
+
                                                     </p>
                                                     <p className="text-sm text-gray-600 mt-1">
                                                         ⏱ <span className="font-semibold text-[#333]">Time:</span> {booking.startTime}:00 to {booking.endTime}:00
