@@ -17,7 +17,7 @@ export default function BookItemPage() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        if (!id) setError("❌ Invalid item ID");
+        if (!id) setError("Invalid item ID");
     }, [id]);
 
     const handleChange = (e) => {
@@ -48,6 +48,7 @@ export default function BookItemPage() {
         } catch (err) {
             const msg = err.response?.data?.message || err.message || "Booking failed.";
             setError(msg);
+            router.push("/");
         } finally {
             setLoading(false);
         }

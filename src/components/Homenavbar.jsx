@@ -20,13 +20,16 @@ export default function Homenavbar({ inputValue, setInputValue }) {
     const [showDropdown, setShowDropdown] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+    const [userRole, setUserrole] = useState(null);
     const router = useRouter();
     const pathname = usePathname();
     const dropdownRef = useRef(null);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
+        const useData = localStorage.getItem("user");
+        const role = JSON.parse(useData).role;
+        setUserrole(role);
         setIsLoggedIn(!!token);
     }, []);
 
@@ -120,7 +123,7 @@ export default function Homenavbar({ inputValue, setInputValue }) {
                                     {showDropdown && (
                                         <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md z-50">
                                             <Link
-                                                href="/dashboard"
+                                                href={userRole === "admin" ? "/admin" : "/dashboard"}
                                                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50"
                                             >
                                                 Dashboard
@@ -183,7 +186,7 @@ export default function Homenavbar({ inputValue, setInputValue }) {
                             {isLoggedIn ? (
                                 <>
                                     <Link
-                                        href="/dashboard"
+                                        href={userRole === "admin" ? "/admin" : "/dashboard"}
                                         className="flex items-center gap-2 text-orange-500 hover:text-orange-600"
                                         onClick={() => setMenuOpen(false)}
                                     >
