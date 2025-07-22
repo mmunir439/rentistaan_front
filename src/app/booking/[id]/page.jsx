@@ -186,7 +186,9 @@ export default function BookingForm() {
     const router = useRouter();
     const params = useParams();         // 👈 get dynamic route
     const { id } = useParams();
+    // const id = params.id;
     // const id = params?.id;
+    console.log(`id is ${id}`)
     const [form, setForm] = useState({ startTime: "", endTime: "" });
     const [bookingDate, setBookingDate] = useState(() =>
         new Date().toISOString().split("T")[0]
