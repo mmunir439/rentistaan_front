@@ -25,13 +25,31 @@ export default function Homenavbar({ inputValue, setInputValue }) {
     const pathname = usePathname();
     const dropdownRef = useRef(null);
 
+    // useEffect(() => {
+    //     const token = localStorage.getItem("token");
+    //     const useData = localStorage.getItem("user");
+    //     const role = JSON.parse(useData).role;
+    //     setUserrole(role);
+    //     setIsLoggedIn(!!token);
+    // }, []);
     useEffect(() => {
         const token = localStorage.getItem("token");
-        const useData = localStorage.getItem("user");
-        const role = JSON.parse(useData).role;
-        setUserrole(role);
+        const userData = localStorage.getItem("user");
+
+        if (userData) {
+            try {
+                const user = JSON.parse(userData);
+                if (user?.role) {
+                    setUserrole(user.role);
+                }
+            } catch (err) {
+                console.error("Error parsing user data:", err);
+            }
+        }
+
         setIsLoggedIn(!!token);
     }, []);
+
 
     useEffect(() => {
         setLoading(false);

@@ -9,10 +9,7 @@ export default function Main() {
   const [inputValue, setInputValue] = useState("");
   return (
     <div>
-      {/* <h1>{process.env.NEXT_PUBLIC_BACKEND_URL}</h1> */}
-      {/* Pass state and setter to Homenavbar */}
       <Homenavbar inputValue={inputValue} setInputValue={setInputValue} />
-      {/* Pass inputValue to ItemList */}
       <ItemList inputValue={inputValue} />
       <Footer />
     </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import Footer from "@/components/Footer";
+
 export default function RegisterPage() {
     const router = useRouter();
 
@@ -15,7 +16,8 @@ export default function RegisterPage() {
         address: "",
     });
 
-    const [error, setError] = useState("");
+    const [fieldErrors, setFieldErrors] = useState({});
+    const [generalError, setGeneralError] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
@@ -23,11 +25,18 @@ export default function RegisterPage() {
             ...form,
             [e.target.name.toLowerCase()]: e.target.value,
         });
+
+        // Clear field-specific error when typing
+        setFieldErrors((prev) => ({
+            ...prev,
+            [e.target.name]: "",
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError("");
+        setGeneralError("");
+        setFieldErrors({});
         setLoading(true);
 
         try {
@@ -35,7 +44,25 @@ export default function RegisterPage() {
             router.push("/login");
         } catch (err) {
             console.error(err);
-            setError(err.response?.data?.message || "Registration failed. Try again.");
+
+            // If error has field-specific errors
+            if (err.response?.data?.errors) {
+                setFieldErrors(err.response.data.errors);
+            } else if (err.response?.data?.message) {
+                // Generic single error (like duplicate phone)
+                const message = err.response.data.message;
+
+                // Try to auto-detect the field from message
+                if (message.toLowerCase().includes("phone")) {
+                    setFieldErrors({ phone: message });
+                } else if (message.toLowerCase().includes("email")) {
+                    setFieldErrors({ email: message });
+                } else {
+                    setGeneralError(message);
+                }
+            } else {
+                setGeneralError("Registration failed. Try again.");
+            }
         } finally {
             setLoading(false);
         }
@@ -49,9 +76,9 @@ export default function RegisterPage() {
                         Sign Up
                     </h2>
 
-                    {error && (
+                    {generalError && (
                         <div className="bg-red-100 text-red-700 border border-red-300 p-2 rounded text-center text-sm mb-4">
-                            {error}
+                            {generalError}
                         </div>
                     )}
 
@@ -74,8 +101,12 @@ export default function RegisterPage() {
                                     onChange={handleChange}
                                     required
                                     placeholder={input.placeholder}
-                                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                                    className={`w-full px-3 py-2 text-sm rounded-lg border ${fieldErrors[input.name] ? "border-red-400" : "border-gray-300"
+                                        } focus:ring-2 focus:ring-orange-400 focus:outline-none`}
                                 />
+                                {fieldErrors[input.name] && (
+                                    <p className="text-red-600 text-xs mt-1">{fieldErrors[input.name]}</p>
+                                )}
                             </div>
                         ))}
 

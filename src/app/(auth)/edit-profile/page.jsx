@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
-import { getToken } from "@/utils/token";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar_2";
 
@@ -16,9 +15,11 @@ export default function EditProfilePage() {
         address: "",
         password: "",
     });
-    const [loading, setLoading] = useState(false);
+
+    const [fieldErrors, setFieldErrors] = useState({});
+    const [generalError, setGeneralError] = useState("");
     const [message, setMessage] = useState("");
-    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         async function fetchUser() {
@@ -37,34 +38,54 @@ export default function EditProfilePage() {
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+
+        // Clear field-specific error when user types
+        setFieldErrors((prev) => ({
+            ...prev,
+            [e.target.name]: "",
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setMessage("");
-        setError("");
+        setGeneralError("");
+        setFieldErrors({});
 
         try {
             const res = await api.put("/user/update-profile", form);
             setMessage("✅ Profile updated successfully. Redirecting...");
 
-            // 🔑 Fetch updated user to get their role
             const userRes = await api.get("/user/me");
             const role = userRes.data.user.role;
 
-            // ⏳ Redirect after 3 seconds based on role
             setTimeout(() => {
                 role === "user" ? router.push("/dashboard") : router.push("/admin");
             }, 3000);
         } catch (err) {
             console.error(err);
-            setError(err.response?.data?.message || "Update failed.");
+
+            if (err.response?.data?.errors) {
+                setFieldErrors(err.response.data.errors);
+            } else if (err.response?.data?.message) {
+                const message = err.response.data.message;
+
+                // Auto-map error to specific field if possible
+                if (message.toLowerCase().includes("phone")) {
+                    setFieldErrors({ phone: message });
+                } else if (message.toLowerCase().includes("email")) {
+                    setFieldErrors({ email: message });
+                } else {
+                    setGeneralError(message);
+                }
+            } else {
+                setGeneralError("Update failed. Try again.");
+            }
         } finally {
             setLoading(false);
         }
     };
-
 
     return (
         <div>
@@ -79,9 +100,9 @@ export default function EditProfilePage() {
                         </div>
                     )}
 
-                    {error && (
+                    {generalError && (
                         <div className="bg-red-100 text-red-700 border border-red-300 p-2 rounded text-center text-sm mb-4">
-                            {error}
+                            {generalError}
                         </div>
                     )}
 
@@ -103,8 +124,12 @@ export default function EditProfilePage() {
                                     value={form[input.name]}
                                     onChange={handleChange}
                                     placeholder={input.placeholder}
-                                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                                    className={`w-full px-3 py-2 text-sm rounded-lg border ${fieldErrors[input.name] ? "border-red-400" : "border-gray-300"
+                                        } focus:ring-2 focus:ring-orange-400 focus:outline-none`}
                                 />
+                                {fieldErrors[input.name] && (
+                                    <p className="text-red-600 text-xs mt-1">{fieldErrors[input.name]}</p>
+                                )}
                             </div>
                         ))}
 
