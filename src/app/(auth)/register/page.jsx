@@ -70,7 +70,7 @@ export default function RegisterPage() {
 
     return (
         <div>
-            <section className="min-h-screen bg-gradient-to-br from-orange-100 via-white to-pink-100 flex items-center justify-center px-4 py-12">
+            {/* <section className="min-h-screen bg-gradient-to-br from-orange-100 via-white to-pink-100 flex items-center justify-center px-4 py-12">
                 <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-orange-200">
                     <h2 className="text-2xl font-bold text-center text-orange-600 mb-6">
                         Sign Up
@@ -126,7 +126,64 @@ export default function RegisterPage() {
                         </a>
                     </p>
                 </div>
+            </section> */}
+            <section className="min-h-screen bg-gradient-to-br from-yellow-100 via-white to-pink-100 flex items-center justify-center px-4 py-12">
+                <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 border border-yellow-300">
+                    <h2 className="text-3xl font-extrabold text-center text-yellow-600 mb-8">
+                        Sign Up
+                    </h2>
+
+                    {/* generalError div stays the same */}
+
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {[
+                            { label: "Full Name", name: "name", type: "text", placeholder: "Muhammad Munir" },
+                            { label: "Email", name: "email", type: "email", placeholder: "you@example.com" },
+                            { label: "Password", name: "password", type: "password", placeholder: "••••••••" },
+                            { label: "Phone", name: "phone", type: "text", placeholder: "+923001234567" },
+                            { label: "Address", name: "address", type: "text", placeholder: "Your address" },
+                        ].map((input) => (
+                            <div key={input.name}>
+                                <label htmlFor={input.name} className="block text-sm font-semibold text-yellow-700 mb-1">
+                                    {input.label}
+                                </label>
+                                <input
+                                    type={input.type}
+                                    name={input.name}
+                                    value={form[input.name]}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder={input.placeholder}
+                                    className={`w-full px-4 py-3 text-base rounded-xl border transition duration-300
+              ${fieldErrors[input.name]
+                                            ? "border-red-500 bg-red-50 placeholder-red-400"
+                                            : "border-yellow-300 bg-yellow-50 placeholder-yellow-400 focus:border-yellow-500 focus:bg-yellow-100 focus:ring-2 focus:ring-yellow-300"}
+              focus:outline-none`}
+                                />
+                                {fieldErrors[input.name] && (
+                                    <p className="text-red-600 text-xs mt-1">{fieldErrors[input.name]}</p>
+                                )}
+                            </div>
+                        ))}
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full py-3 text-base bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-xl transition duration-300"
+                        >
+                            {loading ? "Registering..." : "Create Account"}
+                        </button>
+                    </form>
+
+                    <p className="text-xs text-center text-yellow-700 mt-6">
+                        Already have an account?{" "}
+                        <a href="/login" className="text-yellow-600 font-semibold hover:underline">
+                            Log in
+                        </a>
+                    </p>
+                </div>
             </section>
+
             <Footer />
         </div>
     );

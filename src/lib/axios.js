@@ -3,10 +3,8 @@ import axios from "axios";
 import { getToken } from "@/utils/token"; // <-- import the token getter
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL, // Your backend base
-  // baseURL: "https://renthubbackend-production.up.railway.app",
-  // Your backend base
-  withCredentials: true, // optional, only if you use cookies
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  withCredentials: true,
 });
 
 // Add Authorization header to every request
