@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/Navbar_2";
 import Footer from "@/components/Footer";
 import PostedItemCard from "@/components/PostedItemCard";
 import DeleteItemModal from "@/components/DeleteItemModal";
@@ -11,11 +11,6 @@ import api from "@/lib/axios";
 import useUser from "@/lib/useUser";
 
 export default function UserDashboard() {
-    //  const hasMounted = useHasMounted();
-
-    // if (!hasMounted) {
-    //   return null;
-    // }
     const user = useUser();
     const [bookings, setBookings] = useState([]);
     const [postedItems, setPostedItems] = useState([]);
