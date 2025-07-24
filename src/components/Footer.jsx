@@ -63,7 +63,7 @@ export default function Footer() {
                         <Link href="https://x.com/Muhamad_munir76" target="_blank" className="text-gray-400 hover:text-white">
                             <Twitter />
                         </Link>
-                        <Link href="https://www.linkedin.com/in/muhammad-munir-928573353/?trk=opento_sprofile_details" target="_blank" className="text-gray-400 hover:text-white">
+                        <Link href="https://www.linkedin.com/in/munirdev/" target="_blank" className="text-gray-400 hover:text-white">
                             <Linkedin />
                         </Link>
                         <Link href="https://www.youtube.com/@MuhammadMunir-cs6ec" target="_blank" className="text-gray-400 hover:text-white">
