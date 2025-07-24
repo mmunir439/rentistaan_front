@@ -5,9 +5,18 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar_2";
 import Footer from "@/components/Footer";
 import api from "@/lib/axios";
-
+import { useEffect } from "react";
 export default function PostItemPage() {
     const router = useRouter();
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            const currentPath = "/postitem"; // or use router.pathname if needed
+            localStorage.setItem("redirectAfterLogin", currentPath);
+            router.push("/login");
+        }
+    }, []);
+
 
     const [form, setForm] = useState({
         title: "",

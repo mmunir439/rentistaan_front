@@ -69,7 +69,7 @@ export default function RegisterPage() {
     };
 
     return (
-        <div>
+        <div className="">
             {/* <section className="min-h-screen bg-gradient-to-br from-orange-100 via-white to-pink-100 flex items-center justify-center px-4 py-12">
                 <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-orange-200">
                     <h2 className="text-2xl font-bold text-center text-orange-600 mb-6">
