@@ -31,12 +31,12 @@ export default function Footer() {
                     <h3 className="text-lg font-semibold mb-3">Contact</h3>
                     <ul className="space-y-2 text-sm text-gray-300">
                         <Link
-                            href="https://mail.google.com/mail/?view=cm&fs=1&to=hrcoder3@gmail.com"
+                            href="https://mail.google.com/mail/?view=cm&fs=1&to=munir.webdev@gmail.com"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="hover:text-teal-400"
                         >
-                            hrcoder3@gmail.com
+                            munir.webdev@gmail.com
                         </Link>
 
                         <li className="flex items-center gap-2">
