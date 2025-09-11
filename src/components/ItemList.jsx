@@ -3,6 +3,88 @@ import api from "@/lib/axios";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import RentButton from "@/components/RentButton";
+const dummyItems = [
+    {
+        _id: "dummy1",
+        title: "Computer",
+        description: "A placeholder vehicle for rent.",
+        category: "Electronics",
+        image: [{ url: "/book1.jpg" }],
+        pricePerHour: 100,
+        location: "Islamabad",
+        isRented: false,
+    },
+    {
+        _id: "dummy2",
+        title: "Applied Physics",
+        description: "A placeholder house for rent.",
+        category: "House",
+        image: [{ url: "/book3.jpg" }],
+        pricePerHour: 500,
+        location: "Dummy City",
+        isRented: false,
+    },
+    {
+        _id: "dummy1",
+        title: "Computer",
+        description: "A placeholder vehicle for rent.",
+        category: "Electronics",
+        image: [{ url: "/book1.jpg" }],
+        pricePerHour: 100,
+        location: "Islamabad",
+        isRented: false,
+    },
+    {
+        _id: "dummy2",
+        title: "Applied Physics",
+        description: "A placeholder house for rent.",
+        category: "House",
+        image: [{ url: "/book3.jpg" }],
+        pricePerHour: 500,
+        location: "Dummy City",
+        isRented: false,
+    },
+    {
+        _id: "dummy1",
+        title: "Computer",
+        description: "A placeholder vehicle for rent.",
+        category: "Electronics",
+        image: [{ url: "/book1.jpg" }],
+        pricePerHour: 100,
+        location: "Islamabad",
+        isRented: false,
+    },
+    {
+        _id: "dummy2",
+        title: "Applied Physics",
+        description: "A placeholder house for rent.",
+        category: "House",
+        image: [{ url: "/book3.jpg" }],
+        pricePerHour: 500,
+        location: "Dummy City",
+        isRented: false,
+    },
+    {
+        _id: "dummy1",
+        title: "Computer",
+        description: "A placeholder vehicle for rent.",
+        category: "Electronics",
+        image: [{ url: "/book1.jpg" }],
+        pricePerHour: 100,
+        location: "Islamabad",
+        isRented: false,
+    },
+    {
+        _id: "dummy2",
+        title: "Applied Physics",
+        description: "A placeholder house for rent.",
+        category: "House",
+        image: [{ url: "/book3.jpg" }],
+        pricePerHour: 500,
+        location: "Dummy City",
+        isRented: false,
+    },
+];
 export default function ItemList({ inputValue }) {
     const [items, setItems] = useState([]);
     const [visibleCount, setVisibleCount] = useState(8); // Initial visible count
@@ -14,9 +96,10 @@ export default function ItemList({ inputValue }) {
     async function getItems() {
         try {
             const res = await api.get("/rentitem");
-            setItems(res.data.data); // Full item list fetched once
+            setItems([...dummyItems, ...res.data.data]); // Merge dummy items with fetched items
         } catch (err) {
             console.error("Error fetching items:", err);
+            setItems(dummyItems); // Fallback to dummy items in case of error
         }
     }
 
